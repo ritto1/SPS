@@ -1,111 +1,14 @@
 <!doctype html>
-<html lang="en">
+<html lang="th">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#101a2d">
   <title>SPS — Smart Plug Dashboard</title>
   <style>
-    :root {
-      color-scheme: dark;
-      --bg: #0b1220;
-      --surface: #121d30;
-      --surface-2: #18263c;
-      --border: rgba(159, 181, 216, .14);
-      --text: #edf3ff;
-      --muted: #91a1bb;
-      --accent: #73e0bf;
-      --accent-dark: #143b39;
-      --danger: #ff7b83;
-      --shadow: 0 24px 70px rgba(0, 0, 0, .28);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      color: var(--text);
-      background: radial-gradient(ellipse at 20% 0%, #172a3d 0, transparent 38%), var(--bg);
-    }
-    button, input { font: inherit; }
-    button { cursor: pointer; }
-    .shell { max-width: 1160px; margin: 0 auto; padding: 32px 24px 56px; }
-    header { display: flex; justify-content: space-between; align-items: center; gap: 20px; margin-bottom: 38px; }
-    .brand { display: flex; align-items: center; gap: 13px; }
-    .brand-mark { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 14px; color: #09201e; background: var(--accent); font-size: 22px; font-weight: 900; box-shadow: 0 8px 26px rgba(115, 224, 191, .18); }
-    .brand-name { font-size: 16px; font-weight: 750; letter-spacing: .02em; }
-    .brand-subtitle { margin-top: 3px; color: var(--muted); font-size: 12px; }
-    .connection { display: inline-flex; align-items: center; gap: 9px; color: var(--muted); font-size: 13px; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: #74839b; box-shadow: 0 0 0 4px rgba(116,131,155,.12); }
-    .dot.online { background: var(--accent); box-shadow: 0 0 0 4px rgba(115,224,191,.13); }
-    .dot.offline { background: var(--danger); box-shadow: 0 0 0 4px rgba(255,123,131,.13); }
-    .intro { margin-bottom: 25px; }
-    .eyebrow { color: var(--accent); font-weight: 700; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
-    h1 { margin: 9px 0 7px; font-size: clamp(29px, 5vw, 42px); letter-spacing: -.04em; }
-    .intro p { margin: 0; color: var(--muted); line-height: 1.6; }
-    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-    .card { border: 1px solid var(--border); border-radius: 18px; background: linear-gradient(145deg, rgba(24,38,60,.96), rgba(17,29,47,.96)); box-shadow: var(--shadow); }
-    .metric { padding: 23px 24px; min-height: 146px; }
-    .metric-label { display: flex; align-items: center; gap: 9px; color: var(--muted); font-size: 13px; }
-    .metric-icon { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 10px; background: rgba(115,224,191,.09); color: var(--accent); font-size: 15px; }
-    .metric-value { margin-top: 20px; font-size: 31px; font-weight: 730; letter-spacing: -.04em; }
-    .metric-unit { margin-left: 5px; color: var(--muted); font-size: 14px; font-weight: 500; letter-spacing: 0; }
-    .main-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr); gap: 16px; margin-top: 16px; }
-    .panel { padding: 24px; }
-    .panel-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 22px; }
-    h2 { margin: 0; font-size: 16px; letter-spacing: -.01em; }
-    .panel-description { margin: 6px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
-    .plug-control { min-height: 125px; display: flex; justify-content: space-between; align-items: center; gap: 18px; padding: 20px; border: 1px solid var(--border); border-radius: 15px; background: rgba(7,15,28,.32); }
-    .state-title { font-size: 21px; font-weight: 700; }
-    .state-copy { margin-top: 6px; color: var(--muted); font-size: 13px; }
-    .switch { position: relative; flex: 0 0 auto; width: 68px; height: 38px; padding: 4px; border: 1px solid rgba(255,255,255,.1); border-radius: 99px; background: #354259; transition: background .2s ease; }
-    .switch::after { content: ""; display: block; width: 28px; height: 28px; border-radius: 50%; background: #d7dfec; box-shadow: 0 2px 6px rgba(0,0,0,.25); transition: transform .2s ease; }
-    .switch[aria-checked="true"] { background: #218b73; }
-    .switch[aria-checked="true"]::after { transform: translateX(30px); background: white; }
-    .switch:disabled { opacity: .48; cursor: not-allowed; }
-    .field-label { display: block; margin: 19px 0 8px; color: #c9d4e5; font-size: 12px; font-weight: 650; }
-    .inline-form { display: flex; gap: 10px; }
-    input { width: 100%; min-width: 0; height: 44px; padding: 0 13px; border: 1px solid var(--border); border-radius: 10px; outline: none; color: var(--text); background: rgba(7,15,28,.5); }
-    input:focus { border-color: rgba(115,224,191,.65); box-shadow: 0 0 0 3px rgba(115,224,191,.09); }
-    input::placeholder { color: #677791; }
-    .button { min-height: 42px; padding: 0 15px; border: 1px solid transparent; border-radius: 10px; color: #0b211f; background: var(--accent); font-size: 12px; font-weight: 750; transition: transform .15s, opacity .15s; white-space: nowrap; }
-    .button:hover { transform: translateY(-1px); }
-    .button:disabled { opacity: .45; cursor: not-allowed; transform: none; }
-    .button.secondary { color: #d8e2f2; border-color: var(--border); background: var(--surface-2); }
-    .button.danger { color: #ffb1b5; border-color: rgba(255,123,131,.2); background: rgba(255,123,131,.08); }
-    .panel-footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 20px; }
-    .tiny-note { color: var(--muted); font-size: 11px; line-height: 1.5; }
-    .logs-card { margin-top: 16px; padding: 24px; }
-    .logs-wrap { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; text-align: left; }
-    th { padding: 0 12px 12px; color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; }
-    td { padding: 13px 12px; border-top: 1px solid var(--border); color: #dce5f2; font-size: 12px; white-space: nowrap; }
-    th:first-child, td:first-child { padding-left: 0; }
-    .event { display: inline-flex; min-width: 48px; justify-content: center; padding: 5px 8px; border-radius: 7px; color: var(--muted); background: rgba(145,161,187,.1); font-size: 10px; font-weight: 750; }
-    .event.on { color: var(--accent); background: rgba(115,224,191,.1); }
-    .event.off, .event.reset { color: #ffb1b5; background: rgba(255,123,131,.09); }
-    .empty { padding: 26px 0; color: var(--muted); text-align: center; font-size: 13px; }
-    .login-wrap { max-width: 540px; margin: 8vh auto; padding: 28px; }
-    .login-wrap h1 { font-size: 29px; }
-    .login-wrap .button { margin-top: 20px; width: 100%; }
-    .login-note { margin: 18px 0 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
-    .message { display: none; margin-top: 14px; padding: 11px 12px; border: 1px solid rgba(255,123,131,.18); border-radius: 9px; color: #ffb1b5; background: rgba(255,123,131,.07); font-size: 12px; line-height: 1.5; }
-    .message.show { display: block; }
-    .hidden { display: none !important; }
-    footer { display: flex; justify-content: space-between; gap: 12px; margin-top: 22px; color: #71819a; font-size: 11px; }
-    @media (max-width: 760px) {
-      .shell { padding: 22px 16px 40px; }
-      header { margin-bottom: 29px; }
-      .grid { grid-template-columns: 1fr; gap: 10px; }
-      .metric { min-height: auto; padding: 17px 19px; }
-      .metric-value { margin-top: 12px; font-size: 27px; }
-      .main-grid { grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
-      .panel, .logs-card { padding: 19px; }
-      .logs-card { margin-top: 10px; }
-      .login-wrap { margin: 4vh auto; padding: 22px; }
-      footer { flex-direction: column; }
-    }
-    @media (max-width: 410px) { .connection { font-size: 0; } .connection .dot { margin-right: 3px; } .inline-form { flex-wrap: wrap; } .inline-form .button { width: 100%; } }
+    :root{color-scheme:dark;--bg:#0b1220;--surface:#121d30;--surface2:#18263c;--border:rgba(159,181,216,.14);--text:#edf3ff;--muted:#91a1bb;--accent:#73e0bf;--danger:#ff7b83;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--text);background:radial-gradient(ellipse at 20% 0%,#172a3d 0,transparent 38%),var(--bg)}button,input{font:inherit}button{cursor:pointer}.shell{max-width:1160px;margin:0 auto;padding:32px 24px 56px}header{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:38px}.brand{display:flex;align-items:center;gap:13px}.brand-mark{width:44px;height:44px;display:grid;place-items:center;border-radius:14px;color:#09201e;background:var(--accent);font-size:22px;font-weight:900;box-shadow:0 8px 26px rgba(115,224,191,.18)}.brand-name{font-size:16px;font-weight:750;letter-spacing:.02em}.brand-subtitle{margin-top:3px;color:var(--muted);font-size:12px}.connection{display:inline-flex;align-items:center;gap:9px;color:var(--muted);font-size:13px}.dot{width:8px;height:8px;border-radius:50%;background:#74839b;box-shadow:0 0 0 4px rgba(116,131,155,.12)}.dot.online{background:var(--accent);box-shadow:0 0 0 4px rgba(115,224,191,.13)}.dot.offline{background:var(--danger);box-shadow:0 0 0 4px rgba(255,123,131,.13)}.intro{margin-bottom:25px}.eyebrow{color:var(--accent);font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase}h1{margin:9px 0 7px;font-size:clamp(29px,5vw,42px);letter-spacing:-.04em}.intro p{margin:0;color:var(--muted);line-height:1.6}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.card{border:1px solid var(--border);border-radius:18px;background:linear-gradient(145deg,rgba(24,38,60,.96),rgba(17,29,47,.96));box-shadow:0 24px 70px rgba(0,0,0,.28)}.metric{padding:23px 24px;min-height:146px}.metric-label{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:13px}.metric-icon{display:grid;place-items:center;width:30px;height:30px;border-radius:10px;background:rgba(115,224,191,.09);color:var(--accent);font-size:15px}.metric-value{margin-top:20px;font-size:31px;font-weight:730;letter-spacing:-.04em}.metric-unit{margin-left:5px;color:var(--muted);font-size:14px;font-weight:500;letter-spacing:0}.main-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(320px,.95fr);gap:16px;margin-top:16px}.panel{padding:24px}.panel-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:22px}h2{margin:0;font-size:16px;letter-spacing:-.01em}.panel-description{margin:6px 0 0;color:var(--muted);font-size:12px;line-height:1.5}.plug-control{min-height:125px;display:flex;justify-content:space-between;align-items:center;gap:18px;padding:20px;border:1px solid var(--border);border-radius:15px;background:rgba(7,15,28,.32)}.state-title{font-size:21px;font-weight:700}.state-copy{margin-top:6px;color:var(--muted);font-size:13px}.switch{position:relative;flex:0 0 auto;width:68px;height:38px;padding:4px;border:1px solid rgba(255,255,255,.1);border-radius:99px;background:#354259;transition:background .2s}.switch:after{content:"";display:block;width:28px;height:28px;border-radius:50%;background:#d7dfec;box-shadow:0 2px 6px rgba(0,0,0,.25);transition:transform .2s}.switch[aria-checked=true]{background:#218b73}.switch[aria-checked=true]:after{transform:translateX(30px);background:white}.switch:disabled{opacity:.48;cursor:not-allowed}.field-label{display:block;margin:19px 0 8px;color:#c9d4e5;font-size:12px;font-weight:650}.inline-form{display:flex;gap:10px}input{width:100%;min-width:0;height:44px;padding:0 13px;border:1px solid var(--border);border-radius:10px;outline:none;color:var(--text);background:rgba(7,15,28,.5)}input:focus{border-color:rgba(115,224,191,.65);box-shadow:0 0 0 3px rgba(115,224,191,.09)}input::placeholder{color:#677791}.button{min-height:42px;padding:0 15px;border:1px solid transparent;border-radius:10px;color:#0b211f;background:var(--accent);font-size:12px;font-weight:750;transition:transform .15s,opacity .15s;white-space:nowrap}.button:hover{transform:translateY(-1px)}.button:disabled{opacity:.45;cursor:not-allowed;transform:none}.button.secondary{color:#d8e2f2;border-color:var(--border);background:var(--surface2)}.button.danger{color:#ffb1b5;border-color:rgba(255,123,131,.2);background:rgba(255,123,131,.08)}.panel-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:20px}.tiny-note{color:var(--muted);font-size:11px;line-height:1.5}.logs-card{margin-top:16px;padding:24px}.logs-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;text-align:left}th{padding:0 12px 12px;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.11em;text-transform:uppercase}td{padding:13px 12px;border-top:1px solid var(--border);color:#dce5f2;font-size:12px;white-space:nowrap}th:first-child,td:first-child{padding-left:0}.event{display:inline-flex;min-width:48px;justify-content:center;padding:5px 8px;border-radius:7px;color:var(--muted);background:rgba(145,161,187,.1);font-size:10px;font-weight:750}.event.on{color:var(--accent);background:rgba(115,224,191,.1)}.event.off,.event.reset{color:#ffb1b5;background:rgba(255,123,131,.09)}.empty{padding:26px 0;color:var(--muted);text-align:center;font-size:13px}.login-wrap{max-width:500px;margin:8vh auto;padding:28px}.login-wrap h1{font-size:29px}.login-wrap .button{width:100%}.tabs{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:22px 0 18px;padding:5px;border:1px solid var(--border);border-radius:12px;background:rgba(7,15,28,.35)}.tab{min-height:38px;border:0;border-radius:8px;color:var(--muted);background:transparent;font-size:12px;font-weight:700}.tab.active{color:var(--text);background:var(--surface2)}.auth-form .button{margin-top:20px}.google-button{margin-top:10px}.divider{display:flex;align-items:center;gap:12px;margin:17px 0 3px;color:var(--muted);font-size:11px}.divider:before,.divider:after{content:"";height:1px;flex:1;background:var(--border)}.login-note{margin:18px 0 0;color:var(--muted);font-size:12px;line-height:1.65}.message{display:none;margin-top:14px;padding:11px 12px;border:1px solid rgba(255,123,131,.18);border-radius:9px;color:#ffb1b5;background:rgba(255,123,131,.07);font-size:12px;line-height:1.5}.message.show{display:block}.hidden{display:none!important}footer{display:flex;justify-content:space-between;gap:12px;margin-top:22px;color:#71819a;font-size:11px}
+    @media(max-width:760px){.shell{padding:22px 16px 40px}header{margin-bottom:29px}.grid{grid-template-columns:1fr;gap:10px}.metric{min-height:auto;padding:17px 19px}.metric-value{margin-top:12px;font-size:27px}.main-grid{grid-template-columns:1fr;gap:10px;margin-top:10px}.panel,.logs-card{padding:19px}.logs-card{margin-top:10px}.login-wrap{margin:4vh auto;padding:22px}footer{flex-direction:column}}@media(max-width:410px){.connection{font-size:0}.connection .dot{margin-right:3px}.inline-form{flex-wrap:wrap}.inline-form .button{width:100%}}
   </style>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -113,88 +16,52 @@
 </head>
 <body>
   <main class="shell">
-    <header>
-      <div class="brand">
-        <div class="brand-mark" aria-hidden="true">S</div>
-        <div><div class="brand-name">SPS <span style="color:var(--muted);font-weight:500">/ Smart Plug</span></div><div class="brand-subtitle">Energy monitoring dashboard</div></div>
-      </div>
-      <div class="connection" aria-live="polite"><span id="connectionDot" class="dot"></span><span id="connectionText">Not connected</span></div>
-    </header>
-
+    <header><div class="brand"><div class="brand-mark" aria-hidden="true">S</div><div><div class="brand-name">SPS <span style="color:var(--muted);font-weight:500">/ Smart Plug</span></div><div class="brand-subtitle">Energy monitoring dashboard</div></div></div><div class="connection" aria-live="polite"><span id="connectionDot" class="dot"></span><span id="connectionText">ยังไม่ได้เชื่อมต่อ</span></div></header>
     <section id="loginView" class="card login-wrap">
-      <div class="eyebrow">Connect your device</div>
-      <h1>Welcome to SPS</h1>
-      <p class="panel-description">Enter your Firebase project details and the Firebase email/password account used by your smart plug.</p>
-      <form id="loginForm">
-        <label class="field-label" for="apiKey">Firebase Web API key</label>
-        <input id="apiKey" name="apiKey" autocomplete="off" placeholder="AIza..." required>
-        <label class="field-label" for="databaseUrl">Realtime Database URL</label>
-        <input id="databaseUrl" name="databaseUrl" type="url" autocomplete="url" placeholder="https://your-project-default-rtdb..." required>
-        <label class="field-label" for="email">Firebase account email</label>
-        <input id="email" name="email" type="email" autocomplete="username" placeholder="you@example.com" required>
-        <label class="field-label" for="password">Password</label>
-        <input id="password" name="password" type="password" autocomplete="current-password" required>
-        <button id="loginButton" class="button" type="submit">Connect to dashboard</button>
-        <div id="loginError" class="message" role="alert"></div>
+      <div class="eyebrow">บัญชี SPS</div><h1 id="authHeading">ยินดีต้อนรับ</h1><p class="panel-description">สมัครสมาชิกหรือเข้าสู่ระบบเพื่อดูและควบคุม Smart Plug</p>
+      <div class="tabs" role="tablist"><button id="loginTab" class="tab active" type="button" role="tab" aria-selected="true">เข้าสู่ระบบ</button><button id="registerTab" class="tab" type="button" role="tab" aria-selected="false">สมัครสมาชิก</button></div>
+      <form id="authForm" class="auth-form">
+        <div id="usernameGroup" class="hidden"><label class="field-label" for="username">ชื่อผู้ใช้</label><input id="username" name="username" autocomplete="nickname" minlength="3" maxlength="24" placeholder="ชื่อที่ต้องการให้แสดง"></div>
+        <label class="field-label" for="email">อีเมล</label><input id="email" name="email" type="email" autocomplete="username" placeholder="you@example.com" required>
+        <label class="field-label" for="password">รหัสผ่าน</label><input id="password" name="password" type="password" autocomplete="current-password" minlength="6" placeholder="อย่างน้อย 6 ตัวอักษร" required>
+        <button id="authButton" class="button" type="submit">เข้าสู่ระบบ</button>
       </form>
-      <p class="login-note">Find the API key in Firebase project settings and the database URL in Realtime Database. Your password is used to sign in and is not saved in this browser. Enable Email/Password sign-in in Firebase Authentication.</p>
+      <div class="divider">หรือ</div><button id="googleButton" class="button secondary google-button" type="button">ดำเนินการต่อด้วย Google</button>
+      <div id="authMessage" class="message" role="alert"></div>
+      <p class="login-note">Firebase ใช้อีเมลสำหรับเข้าสู่ระบบ ชื่อผู้ใช้ที่สมัครจะใช้แสดงชื่อในหน้าเว็บเท่านั้น อย่าใช้รหัสผ่านซ้ำกับบัญชีสำคัญอื่น</p>
     </section>
 
     <section id="dashboardView" class="hidden">
-      <div class="intro">
-        <div class="eyebrow">Device overview</div>
-        <h1>Your smart plug, at a glance.</h1>
-        <p>Monitor live status, estimated energy usage, and activity from your SPS device.</p>
-      </div>
-      <div class="grid">
-        <article class="card metric"><div class="metric-label"><span class="metric-icon">ϟ</span>Current power</div><div class="metric-value"><span id="powerValue">—</span><span class="metric-unit">W</span></div></article>
-        <article class="card metric"><div class="metric-label"><span class="metric-icon">◉</span>Total energy</div><div class="metric-value"><span id="energyValue">—</span><span class="metric-unit">kWh</span></div></article>
-        <article class="card metric"><div class="metric-label"><span class="metric-icon">◷</span>Runtime</div><div class="metric-value"><span id="runtimeValue">—</span></div></article>
-      </div>
+      <div class="intro"><div class="eyebrow">ภาพรวมอุปกรณ์</div><h1>Smart Plug ของคุณ</h1><p>ตรวจสอบสถานะ กำลังไฟ และประวัติการใช้งานแบบเรียลไทม์</p></div>
+      <div class="grid"><article class="card metric"><div class="metric-label"><span class="metric-icon">ϟ</span>กำลังไฟขณะนี้</div><div class="metric-value"><span id="powerValue">—</span><span class="metric-unit">W</span></div></article><article class="card metric"><div class="metric-label"><span class="metric-icon">◉</span>พลังงานสะสม</div><div class="metric-value"><span id="energyValue">—</span><span class="metric-unit">kWh</span></div></article><article class="card metric"><div class="metric-label"><span class="metric-icon">◷</span>เวลาใช้งาน</div><div class="metric-value"><span id="runtimeValue">—</span></div></article></div>
       <div class="main-grid">
-        <section class="card panel">
-          <div class="panel-heading"><div><h2>Plug control</h2><p class="panel-description">Switch the relay and set the estimated load power.</p></div></div>
-          <div class="plug-control">
-            <div><div id="stateTitle" class="state-title">Waiting for device…</div><div id="stateCopy" class="state-copy">Controls become available when connected.</div></div>
-            <button id="relayToggle" class="switch" type="button" role="switch" aria-checked="false" aria-label="Turn smart plug on or off" disabled></button>
-          </div>
-          <label class="field-label" for="ratedWatt">Estimated rated power</label>
-          <form id="wattForm" class="inline-form"><input id="ratedWatt" type="number" min="0.1" step="0.1" placeholder="60" aria-label="Rated power in watts" required><button class="button" id="saveWattButton" type="submit" disabled>Save watts</button></form>
-          <div class="panel-footer"><span id="lastUpdate" class="tiny-note">Last device update: —</span><button id="resetButton" class="button danger" type="button" disabled>Reset energy</button></div>
-        </section>
-        <section class="card panel">
-          <div class="panel-heading"><div><h2>Device connection</h2><p class="panel-description">The dashboard reads and writes the same Firebase paths as the ESP32 firmware.</p></div></div>
-          <div style="padding:16px;border:1px solid var(--border);border-radius:13px;background:rgba(7,15,28,.32)">
-            <div class="metric-label">Realtime Database path</div>
-            <div style="margin-top:9px;color:var(--accent);font-family:ui-monospace,SFMono-Regular,monospace;font-size:12px">/smart_plug/</div>
-            <div class="tiny-note" style="margin-top:13px">For live updates, the ESP32 must be online and signed in to the same Firebase project. Power is estimated using the rated watts configured below.</div>
-          </div>
-          <div class="panel-footer"><span id="signedInAs" class="tiny-note"></span><button id="logoutButton" class="button secondary" type="button">Disconnect</button></div>
-        </section>
+        <section class="card panel"><div class="panel-heading"><div><h2>ควบคุมปลั๊ก</h2><p class="panel-description">สั่งเปิด/ปิดรีเลย์และตั้งค่ากำลังไฟโดยประมาณ</p></div></div><div class="plug-control"><div><div id="stateTitle" class="state-title">กำลังรอสถานะอุปกรณ์…</div><div id="stateCopy" class="state-copy">ตรวจสอบการเชื่อมต่ออุปกรณ์</div></div><button id="relayToggle" class="switch" type="button" role="switch" aria-checked="false" aria-label="เปิดหรือปิดปลั๊ก" disabled></button></div><label class="field-label" for="ratedWatt">กำลังไฟโดยประมาณ</label><form id="wattForm" class="inline-form"><input id="ratedWatt" type="number" min="0.1" step="0.1" placeholder="60" aria-label="กำลังไฟวัตต์" required><button class="button" id="saveWattButton" type="submit" disabled>บันทึกวัตต์</button></form><div class="panel-footer"><span id="lastUpdate" class="tiny-note">อัปเดตล่าสุด: —</span><button id="resetButton" class="button danger" type="button" disabled>รีเซ็ตพลังงาน</button></div></section>
+        <section class="card panel"><div class="panel-heading"><div><h2>การเชื่อมต่อ</h2><p class="panel-description">เชื่อมต่อกับ Firebase Realtime Database และ ESP32</p></div></div><div style="padding:16px;border:1px solid var(--border);border-radius:13px;background:rgba(7,15,28,.32)"><div class="metric-label">Realtime Database path</div><div style="margin-top:9px;color:var(--accent);font-family:ui-monospace,monospace;font-size:12px">/smart_plug/</div><div class="tiny-note" style="margin-top:13px">ผู้ใช้ที่สมัครและยืนยันอีเมลแล้วสามารถควบคุมปลั๊กได้ ตรวจสอบ Rules ให้ตรงกับคำแนะนำหลังโค้ดอัปเดต</div></div><div class="panel-footer"><span id="signedInAs" class="tiny-note"></span><button id="logoutButton" class="button secondary" type="button">ออกจากระบบ</button></div></section>
       </div>
-      <section class="card logs-card">
-        <div class="panel-heading"><div><h2>Recent activity</h2><p class="panel-description">Latest smart plug events from Firebase.</p></div><span class="tiny-note">Latest 20</span></div>
-        <div class="logs-wrap"><table><thead><tr><th>Event</th><th>Time</th><th>Power</th><th>Energy</th></tr></thead><tbody id="logsBody"><tr><td class="empty" colspan="4">Waiting for activity…</td></tr></tbody></table></div>
-      </section>
+      <section class="card logs-card"><div class="panel-heading"><div><h2>กิจกรรมล่าสุด</h2><p class="panel-description">ประวัติการทำงานจาก Firebase</p></div><span class="tiny-note">20 รายการล่าสุด</span></div><div class="logs-wrap"><table><thead><tr><th>เหตุการณ์</th><th>เวลา</th><th>กำลังไฟ</th><th>พลังงาน</th></tr></thead><tbody id="logsBody"><tr><td class="empty" colspan="4">กำลังโหลด…</td></tr></tbody></table></div></section>
     </section>
     <footer><span>SPS Smart Plug Dashboard</span><span>ESP32-S3 · Firebase Realtime Database</span></footer>
   </main>
 <script>
   const $ = (id) => document.getElementById(id);
-  let database = null;
-  let auth = null;
+  const firebaseConfig = {
+    apiKey: 'AIzaSyBmmdKlpt3liun3hptVyJsSAsADDlJF4J8',
+    authDomain: 'spss-25920.firebaseapp.com',
+    databaseURL: 'https://spss-25920-default-rtdb.asia-southeast1.firebasedatabase.app',
+    projectId: 'spss-25920',
+    storageBucket: 'spss-25920.firebasestorage.app',
+    messagingSenderId: '871518498643',
+    appId: '1:871518498643:web:870632878369053af3bba6',
+    measurementId: 'G-C5Y70R4XKX'
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const database = firebase.database();
+  let isRegisterMode = false;
   let currentRelayState = false;
-  let connectionRef = null;
-  let statusRef = null;
-  let logsRef = null;
+  let connectionRef = null, statusRef = null, logsRef = null;
 
-  const savedConfig = (() => {
-    try { return JSON.parse(localStorage.getItem('spsFirebaseConfig') || '{}'); }
-    catch (_) { return {}; }
-  })();
-  $('apiKey').value = savedConfig.apiKey || '';
-  $('databaseUrl').value = savedConfig.databaseURL || '';
-
+  auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).catch(console.error);
   function setConnection(online, text) {
     $('connectionDot').className = 'dot' + (online === true ? ' online' : online === false ? ' offline' : '');
     $('connectionText').textContent = text;
@@ -204,17 +71,42 @@
     $('saveWattButton').disabled = !enabled;
     $('resetButton').disabled = !enabled;
   }
-  function showError(message) {
-    $('loginError').textContent = message;
-    $('loginError').classList.add('show');
+  function showAuthMessage(message) {
+    $('authMessage').textContent = message;
+    $('authMessage').classList.add('show');
+  }
+  function friendlyError(error) {
+    const messages = {
+      'auth/email-already-in-use': 'อีเมลนี้มีบัญชีอยู่แล้ว กรุณาเข้าสู่ระบบแทน',
+      'auth/invalid-email': 'รูปแบบอีเมลไม่ถูกต้อง',
+      'auth/weak-password': 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร',
+      'auth/user-not-found': 'ไม่พบบัญชีนี้ กรุณาตรวจสอบอีเมลหรือสมัครสมาชิก',
+      'auth/wrong-password': 'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
+      'auth/invalid-credential': 'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
+      'auth/too-many-requests': 'ลองเข้าสู่ระบบใหม่ภายหลัง',
+      'auth/unauthorized-domain': 'โดเมนเว็บไซต์ยังไม่ได้รับอนุญาตใน Firebase Authentication',
+      'auth/popup-closed-by-user': 'ปิดหน้าต่าง Google ก่อนเข้าสู่ระบบเสร็จ'
+    };
+    return messages[error.code] || error.message || 'เกิดข้อผิดพลาด กรุณาลองอีกครั้ง';
+  }
+  function setAuthMode(register) {
+    isRegisterMode = register;
+    $('loginTab').classList.toggle('active', !register);
+    $('registerTab').classList.toggle('active', register);
+    $('loginTab').setAttribute('aria-selected', String(!register));
+    $('registerTab').setAttribute('aria-selected', String(register));
+    $('usernameGroup').classList.toggle('hidden', !register);
+    $('username').required = register;
+    $('authHeading').textContent = register ? 'สร้างบัญชี SPS' : 'ยินดีต้อนรับ';
+    $('authButton').textContent = register ? 'สมัครสมาชิก' : 'เข้าสู่ระบบ';
+    $('password').autocomplete = register ? 'new-password' : 'current-password';
+    $('authMessage').classList.remove('show');
   }
   function formatRuntime(seconds) {
-    if (!Number.isFinite(seconds) || seconds < 0) return '—';
-    const total = Math.floor(seconds);
-    const days = Math.floor(total / 86400);
-    const hours = Math.floor((total % 86400) / 3600);
-    const minutes = Math.floor((total % 3600) / 60);
-    return days ? `${days}d ${hours}h` : `${hours}h ${minutes}m`;
+    const value = Number(seconds);
+    if (!Number.isFinite(value) || value < 0) return '—';
+    const total = Math.floor(value), days = Math.floor(total / 86400), hours = Math.floor(total % 86400 / 3600), minutes = Math.floor(total % 3600 / 60);
+    return days ? `${days} วัน ${hours} ชม.` : `${hours} ชม. ${minutes} นาที`;
   }
   function cleanNumber(value, digits) {
     const number = Number(value);
@@ -224,126 +116,119 @@
     if (!status || typeof status !== 'object') return;
     currentRelayState = Boolean(status.state);
     $('relayToggle').setAttribute('aria-checked', String(currentRelayState));
-    $('stateTitle').textContent = currentRelayState ? 'Plug is on' : 'Plug is off';
-    $('stateCopy').textContent = currentRelayState ? 'The connected load is receiving power.' : 'The connected load is currently switched off.';
+    $('stateTitle').textContent = currentRelayState ? 'ปลั๊กเปิดอยู่' : 'ปลั๊กปิดอยู่';
+    $('stateCopy').textContent = currentRelayState ? 'อุปกรณ์กำลังรับพลังงาน' : 'อุปกรณ์ถูกปิดอยู่ในขณะนี้';
     $('powerValue').textContent = cleanNumber(status.power_w, 1);
     $('energyValue').textContent = cleanNumber(status.energy_kwh, 4);
     $('runtimeValue').textContent = formatRuntime(status.runtime_sec);
-    $('lastUpdate').textContent = `Last device update: ${status.last_update || '—'}`;
-    if (Number(status.rated_watt) > 0) $('ratedWatt').value = Number(status.rated_watt);
+    $('lastUpdate').textContent = `อัปเดตล่าสุด: ${status.last_update || '—'}`;
   }
   function renderLogs(logs) {
-    const body = $('logsBody');
-    body.replaceChildren();
-    if (!logs || typeof logs !== 'object') {
-      const row = body.insertRow();
-      const cell = row.insertCell(); cell.colSpan = 4; cell.className = 'empty'; cell.textContent = 'No activity recorded yet.';
-      return;
-    }
-    const rows = Object.values(logs).sort((a, b) => String(b?.time || '').localeCompare(String(a?.time || ''))).slice(0, 20);
-    if (!rows.length) {
-      const row = body.insertRow();
-      const cell = row.insertCell(); cell.colSpan = 4; cell.className = 'empty'; cell.textContent = 'No activity recorded yet.';
-      return;
-    }
+    const body = $('logsBody'); body.replaceChildren();
+    const rows = logs && typeof logs === 'object' ? Object.values(logs).sort((a,b) => String(b?.time || '').localeCompare(String(a?.time || ''))).slice(0,20) : [];
+    if (!rows.length) { const row = body.insertRow(); const cell = row.insertCell(); cell.colSpan = 4; cell.className = 'empty'; cell.textContent = 'ยังไม่มีประวัติกิจกรรม'; return; }
     for (const item of rows) {
-      const row = body.insertRow();
-      const eventCell = row.insertCell();
-      const badge = document.createElement('span');
-      const event = String(item?.event || 'LOG').toUpperCase();
-      badge.className = 'event ' + event.toLowerCase(); badge.textContent = event; eventCell.appendChild(badge);
+      const row = body.insertRow(), eventCell = row.insertCell(), badge = document.createElement('span');
+      const event = String(item?.event || 'LOG').toUpperCase(); badge.className = 'event ' + event.toLowerCase(); badge.textContent = event; eventCell.appendChild(badge);
       row.insertCell().textContent = item?.time || '—';
-      row.insertCell().textContent = `${cleanNumber(item?.power_w, 1)} W`;
-      row.insertCell().textContent = `${cleanNumber(item?.energy_kwh, 4)} kWh`;
+      row.insertCell().textContent = `${cleanNumber(item?.power_w,1)} W`;
+      row.insertCell().textContent = `${cleanNumber(item?.energy_kwh,4)} kWh`;
     }
   }
   function stopListeners() {
-    if (!database) return;
-    if (connectionRef) database.ref('.info/connected').off('value');
+    if (connectionRef) connectionRef.off('value');
     if (statusRef) statusRef.off('value');
     if (logsRef) logsRef.off('value');
     connectionRef = statusRef = logsRef = null;
+  }
+  async function saveProfile(user, username) {
+    if (!username) return;
+    try { await database.ref(`/users/${user.uid}/profile`).update({ username, email: user.email || null, updatedAt: firebase.database.ServerValue.TIMESTAMP }); }
+    catch (error) { console.warn('Profile could not be saved. Check the /users database rules.', error); }
   }
   function listenToDevice() {
     stopListeners();
     connectionRef = database.ref('.info/connected');
     statusRef = database.ref('/smart_plug/status');
     logsRef = database.ref('/smart_plug/logs');
-    connectionRef.on('value', (snapshot) => {
+    connectionRef.on('value', snapshot => {
       const online = snapshot.val() === true;
-      setConnection(online, online ? 'Database connected' : 'Database disconnected');
+      setConnection(online, online ? 'เชื่อมต่อฐานข้อมูลแล้ว' : 'ฐานข้อมูลยังไม่เชื่อมต่อ');
       setControlsEnabled(online);
-    }, (error) => { setConnection(false, 'Connection error'); console.error(error); });
-    statusRef.on('value', (snapshot) => renderStatus(snapshot.val()), (error) => {
-      setConnection(false, 'Status unavailable');
-      $('stateTitle').textContent = 'Could not read device status';
-      $('stateCopy').textContent = error.message;
+    }, error => { setConnection(false, 'เกิดข้อผิดพลาดในการเชื่อมต่อ'); console.error(error); });
+    statusRef.on('value', snapshot => renderStatus(snapshot.val()), error => {
+      $('stateTitle').textContent = 'อ่านสถานะไม่ได้';
+      $('stateCopy').textContent = 'ตรวจสอบ Realtime Database Rules และการเชื่อมต่อ';
+      setConnection(false, 'ไม่มีสิทธิ์อ่านข้อมูล'); console.error(error);
     });
-    logsRef.on('value', (snapshot) => renderLogs(snapshot.val()), (error) => console.error('Could not read logs:', error));
+    logsRef.on('value', snapshot => renderLogs(snapshot.val()), error => console.error('อ่านประวัติไม่ได้:', error));
   }
-
-  $('loginForm').addEventListener('submit', async (event) => {
-    event.preventDefault();
-    $('loginError').classList.remove('show');
-    $('loginButton').disabled = true;
-    $('loginButton').textContent = 'Connecting…';
+  function showDashboard(user) {
+    $('loginView').classList.add('hidden');
+    $('dashboardView').classList.remove('hidden');
+    $('signedInAs').textContent = user.displayName || user.email || 'เข้าสู่ระบบแล้ว';
+    listenToDevice();
+  }
+  $('loginTab').addEventListener('click', () => setAuthMode(false));
+  $('registerTab').addEventListener('click', () => setAuthMode(true));
+  $('authForm').addEventListener('submit', async event => {
+    event.preventDefault(); $('authMessage').classList.remove('show');
+    $('authButton').disabled = true;
     try {
-      const apiKey = $('apiKey').value.trim();
-      const databaseURL = $('databaseUrl').value.trim().replace(/\/$/, '');
-      const email = $('email').value.trim();
-      const password = $('password').value;
-      if (!firebase.apps.length) firebase.initializeApp({ apiKey, databaseURL });
-      auth = firebase.auth();
-      database = firebase.database();
-      auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
-      await auth.signInWithEmailAndPassword(email, password);
-      localStorage.setItem('spsFirebaseConfig', JSON.stringify({ apiKey, databaseURL }));
-      $('signedInAs').textContent = `Signed in as ${email}`;
-      $('loginView').classList.add('hidden');
-      $('dashboardView').classList.remove('hidden');
-      $('password').value = '';
-      listenToDevice();
-    } catch (error) {
-      showError(error.message || 'Could not connect. Check your Firebase settings and account.');
-      if (auth && auth.currentUser) await auth.signOut().catch(() => {});
-      setConnection(false, 'Not connected');
-    } finally {
-      $('loginButton').disabled = false;
-      $('loginButton').textContent = 'Connect to dashboard';
-    }
+      const email = $('email').value.trim(), password = $('password').value;
+      if (isRegisterMode) {
+        const username = $('username').value.trim();
+        if (username.length < 3) throw new Error('ชื่อผู้ใช้ต้องมีอย่างน้อย 3 ตัวอักษร');
+        const credential = await auth.createUserWithEmailAndPassword(email, password);
+        await credential.user.updateProfile({ displayName: username });
+        await saveProfile(credential.user, username);
+        await credential.user.sendEmailVerification().catch(error => console.warn('ส่งอีเมลยืนยันไม่สำเร็จ:', error));
+        $('password').value = '';
+        showDashboard(credential.user);
+        showAuthMessage('สมัครสมาชิกสำเร็จ กรุณาตรวจสอบอีเมลเพื่อยืนยันบัญชี');
+      } else {
+        const credential = await auth.signInWithEmailAndPassword(email, password);
+        $('password').value = '';
+        showDashboard(credential.user);
+      }
+    } catch (error) { showAuthMessage(friendlyError(error)); }
+    finally { $('authButton').disabled = false; }
   });
-
+  $('googleButton').addEventListener('click', async () => {
+    $('authMessage').classList.remove('show');
+    try {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      const result = await auth.signInWithPopup(provider);
+      await saveProfile(result.user, result.user.displayName || result.user.email?.split('@')[0] || 'SPS user');
+      showDashboard(result.user);
+    } catch (error) { showAuthMessage(friendlyError(error)); }
+  });
   $('relayToggle').addEventListener('click', async () => {
     setControlsEnabled(false);
     try { await database.ref('/smart_plug/control/relay').set(!currentRelayState); }
-    catch (error) { alert(`Could not update relay: ${error.message}`); }
+    catch (error) { alert(`สั่งงานรีเลย์ไม่สำเร็จ: ${friendlyError(error)}`); }
     finally { setControlsEnabled(true); }
   });
-  $('wattForm').addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const watts = Number($('ratedWatt').value);
+  $('wattForm').addEventListener('submit', async event => {
+    event.preventDefault(); const watts = Number($('ratedWatt').value);
     if (!Number.isFinite(watts) || watts <= 0) return;
     $('saveWattButton').disabled = true;
     try { await database.ref('/smart_plug/control/rated_watt').set(watts); }
-    catch (error) { alert(`Could not save rated power: ${error.message}`); }
+    catch (error) { alert(`บันทึกกำลังไฟไม่สำเร็จ: ${friendlyError(error)}`); }
     finally { $('saveWattButton').disabled = false; }
   });
   $('resetButton').addEventListener('click', async () => {
-    if (!confirm('Reset accumulated energy and runtime? This will be applied by the ESP32.')) return;
+    if (!confirm('ยืนยันรีเซ็ตพลังงานสะสมและเวลาใช้งาน?')) return;
     $('resetButton').disabled = true;
     try { await database.ref('/smart_plug/control/reset_energy').set(true); }
-    catch (error) { alert(`Could not request reset: ${error.message}`); }
+    catch (error) { alert(`สั่งรีเซ็ตไม่สำเร็จ: ${friendlyError(error)}`); }
     finally { $('resetButton').disabled = false; }
   });
   $('logoutButton').addEventListener('click', async () => {
-    stopListeners();
-    if (auth) await auth.signOut();
-    database = auth = null;
-    setControlsEnabled(false);
-    setConnection(null, 'Not connected');
-    $('dashboardView').classList.add('hidden');
-    $('loginView').classList.remove('hidden');
+    stopListeners(); await auth.signOut(); setControlsEnabled(false); setConnection(null, 'ยังไม่ได้เชื่อมต่อ');
+    $('dashboardView').classList.add('hidden'); $('loginView').classList.remove('hidden');
   });
+  auth.onAuthStateChanged(user => { if (user) showDashboard(user); });
 </script>
 </body>
 </html>
